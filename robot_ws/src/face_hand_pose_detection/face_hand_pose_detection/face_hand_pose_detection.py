@@ -31,12 +31,23 @@ class FaceHandPoseDetection:
             image (np.ndarra): Input image
 
         Returns:
-            Image with bounding box
+            Image with landmarks
             Detection results
         """
-        #image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        # Run the model
         results = self.model.process(image)
+
+        # Convert to ROS messages
+        detection_result = self._prepare_results(results)
         
+        # Draw landmarks
+        result_image = self.draw_result_landmarks(image, results)
+        
+        return result_image, detection_result
+
+
+    @staticmethod
+    def _prepare_results(results):
         detection_result = DetectionResult()
         
         if results.pose_landmarks:
@@ -90,25 +101,15 @@ class FaceHandPoseDetection:
                         z=face.z,
                     )
                 )
-            
-        mp_drawing.draw_landmarks(
-            image,
-            results.face_landmarks,
-            mp_holistic.FACEMESH_CONTOURS,
-            landmark_drawing_spec=None,
-            connection_drawing_spec=mp_drawing_styles
-                .get_default_face_mesh_contours_style()
-        )
+                
+        return detection_result
         
-        mp_drawing.draw_landmarks(
-            image,
-            results.pose_landmarks,
-            mp_holistic.POSE_CONNECTIONS,
-            landmark_drawing_spec=mp_drawing_styles
-                .get_default_pose_landmarks_style()
-        )
         
-        print(results)
-        return image, detection_result
-        
+    @staticmethod
+    def draw_result_landmarks(image, results):
+        mp_drawing.draw_landmarks(image, results.face_landmarks)
+        mp_drawing.draw_landmarks(image, results.pose_landmarks)
+        mp_drawing.draw_landmarks(image, results.right_hand_landmarks)
+        mp_drawing.draw_landmarks(image, results.left_hand_landmarks)
+        return image
 
