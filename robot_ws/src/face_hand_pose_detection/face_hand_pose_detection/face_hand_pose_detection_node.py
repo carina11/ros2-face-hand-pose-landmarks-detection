@@ -22,7 +22,6 @@ from face_hand_pose_detection import FaceHandPoseDetection
 from face_hand_pose_detection_msgs.msg import DetectionResult
 
 
-
 class FaceHandPoseDetectionNode(Node):
     """This node detects faces, hands and human poses in the given image topic.
 
@@ -53,11 +52,12 @@ class FaceHandPoseDetectionNode(Node):
         self._image_publisher = self.create_publisher(
             Image, "face_hand_pose_detection/image", 10)
         self._result_publisher = self.create_publisher(
-            DetectionResult, "object_detection/result", 10)
+            DetectionResult, "face_hand_pose_detection/result", 10)
 
     def _image_callback(self, image: Image) -> None:
         cv_image = self.bridge.imgmsg_to_cv2(image, "rgb8")
-        result_image, detection_result = self.face_hand_pose_detection.detect(cv_image)
+        result_image, detection_result = self.face_hand_pose_detection.detect(
+            cv_image)
         self._result_publisher.publish(detection_result)
         self._image_publisher.publish(
             self.bridge.cv2_to_imgmsg(result_image, "rgb8"))

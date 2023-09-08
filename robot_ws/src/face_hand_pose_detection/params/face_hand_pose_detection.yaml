@@ -1,4 +1,3 @@
 face_hand_pose_detection_node:
   ros__parameters:
     topic_image: "/image_raw"
-    max_results: 5
