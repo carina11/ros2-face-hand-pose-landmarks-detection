@@ -1,0 +1,1 @@
+docker build -f docker/Dockerfile -t face_hand_pose_detection:latest .
